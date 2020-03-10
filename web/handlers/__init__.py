@@ -13,6 +13,7 @@ from datetime import datetime
 
 import tornado.web
 import tornado.gen
+from tornado.httpclient import AsyncHTTPClient
 
 from web.common import session
 from web.common.commons import BaseDataResultGenerator
@@ -113,10 +114,11 @@ class UserHandler(BaseHandler):
         self.finish("post success.")
 
 
-class AsyncRequestHandler(BaseHandler):  # 有bug
+class AsyncRequestHandler(BaseHandler):
 
+    # @tornado.web.asynchronous  ==>  使用tornado5.0.2
     @tornado.gen.coroutine
-    def test(self):
+    def get(self):
         service = AsyncHttpService()
-        body = yield service.async_http_execute("https://www.baidu.com")
+        body = yield service.async_http_execute("http://v.juhe.cn/fileconvert/query")
         self.finish(body)

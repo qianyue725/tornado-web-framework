@@ -13,16 +13,24 @@ import tornado.gen
 
 from tornado.httpclient import AsyncHTTPClient
 
+from web.common.commons import BaseDataResultGenerator
+from web.common.exceptions import BussinessExceptionEnum
+
 
 class AsyncHttpService:
     logger = logging.getLogger(__name__)
 
     @tornado.gen.coroutine
     def async_http_execute(self, url):
-        resp = yield AsyncHTTPClient().fetch(url)
-        self.logger.debug("client fetch result, code={}, message={}".format(resp.code, resp.body))
-        if resp.code == 200:
-            body = {"message": "client fetch success"}
-        else:
-            body = {"message": "client fetch error"}
-        return body
+        result = None
+        try:
+            response = yield AsyncHTTPClient().fetch(url)
+            self.logger.debug("client fetch result, code={}, message={}".format(response.code, response.body))
+            if response.code == 200:
+                result = BaseDataResultGenerator.gen_success_result(data=response.body.decode('utf-8'))
+            else:
+                result = BaseDataResultGenerator.gen_fail_result(600000, 'url: {},请求失败. error_code={}'.format(url, response.code))
+        except Exception as e:
+            BussinessExceptionEnum.HTTP_REQUEST_FAIL.throwException()
+            self.logger.error("client fetch fail, error_message={}".format(e.args))
+        return result
