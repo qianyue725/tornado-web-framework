@@ -31,6 +31,6 @@ class AsyncHttpService:
             else:
                 result = BaseDataResultGenerator.gen_fail_result(600000, 'url: {},请求失败. error_code={}'.format(url, response.code))
         except Exception as e:
+            self.logger.error("{} fetch fail, error_message={}".format(url, e.args))
             BussinessExceptionEnum.HTTP_REQUEST_FAIL.throwException()
-            self.logger.error("client fetch fail, error_message={}".format(e.args))
         return result
