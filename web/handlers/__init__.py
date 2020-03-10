@@ -116,9 +116,9 @@ class UserHandler(BaseHandler):
 
 class AsyncRequestHandler(BaseHandler):
 
-    # @tornado.web.asynchronous  ==>  使用tornado5.0.2
+    @tornado.web.asynchronous  # ==>  使用tornado5.0.2
     @tornado.gen.coroutine
-    def get(self):
+    def test(self):
         service = AsyncHttpService()
         body = yield service.async_http_execute("http://v.juhe.cn/fileconvert/query")
         self.finish(body)
